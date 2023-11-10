@@ -1,14 +1,11 @@
 import json
 import pytest
-
-from django.core.management import call_command
 from django.urls import reverse
-
 from rest_framework import status
 from rest_framework.test import APIClient
+from .models import Comic
 
-from e_commerce.models import Comic
-
+from django.core.management import call_command
 
 # Testeamos que sea una POST request y no GET:
 @pytest.mark.django_db
@@ -22,14 +19,13 @@ def test_comic_create_api_view_post_only():
 
     assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED, f'Método HTTP incorrecto. Debe ser una request de tipo "POST".'
 
-
 # Testeamos que la vista creada por el alumno para crear un Comic, efectivamente cree el comic
 @pytest.mark.django_db
 def test_comic_create_api_view():
 
     client = APIClient()
 
-    endpoint_url = reverse('comic_create_api_view')
+    endpoint_url = reverse('comic_create_api_view') 
 
     comic_data = {
         "marvel_id": 1010,
@@ -40,11 +36,7 @@ def test_comic_create_api_view():
         "picture": "https://www.django-rest-framework.org/img/logo.png"
     }
 
-    response = client.post(
-        endpoint_url,
-        data=json.dumps(comic_data),
-        content_type='application/json'
-    )
+    response = client.post(endpoint_url, data=json.dumps(comic_data), content_type='application/json')
 
     assert response.status_code != 404, f'Endpoint no encontrado'
 
@@ -60,10 +52,10 @@ def test_comic_create_api_view():
 @pytest.mark.django_db
 def test_comic_list_api_view():
     client = APIClient()
-
+    
     call_command('get_comics')
-
-    endpoint_url = reverse('comic_list_api_view')
+    
+    endpoint_url = reverse('comic_list_api_view') 
 
     response = client.get(endpoint_url)
 
@@ -71,15 +63,16 @@ def test_comic_list_api_view():
     assert response.data != [], 'Se esperaba una lista con comics, al contrario, se obtuvo una lista vacía.'
 
 
+
 # Testeamos que la vista creada por el alumno permita obtener un comic por id
 @pytest.mark.django_db
 def test_comic_retrieve_api_view():
     client = APIClient()
     call_command('get_comics')
-
+    
     comic_id = Comic.objects.first().id
 
-    endpoint_url = reverse('comic_retrieve_api_view')
+    endpoint_url = reverse('comic_retrieve_api_view') 
 
     response = client.get(f"{endpoint_url}?id={comic_id}")
 
